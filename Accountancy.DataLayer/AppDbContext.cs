@@ -1,4 +1,5 @@
-﻿using Accountancy.DataLayer.Extensions;
+﻿using System.Reflection;
+using Accountancy.DataLayer.Extensions;
 using Accountancy.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -14,6 +15,7 @@ public class AppDbContext : DbContext
 	public DbSet<Invoice> Invoices { get; set; }
 	public DbSet<InvoicePosition> InvoicePositions { get; set; }
 	public DbSet<Product> Products { get; set; }
+	public DbSet<AttributeProduct> AttributeProducts { get; set; }
 
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 	{
@@ -24,6 +26,8 @@ public class AppDbContext : DbContext
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
+		modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
 		//modelBuilder.SeedCustomers();
 		//modelBuilder.SeedAddresses();
 		modelBuilder.SeedData();

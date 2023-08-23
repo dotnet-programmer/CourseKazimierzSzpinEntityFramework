@@ -4,6 +4,7 @@ using Blog.DataLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Blog.DataLayer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230822181420_SetConfigurationPost")]
+    partial class SetConfigurationPost
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,25 +35,19 @@ namespace Blog.DataLayer.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Url")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
 
                     b.HasData(
                         new
@@ -72,8 +69,7 @@ namespace Blog.DataLayer.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -93,9 +89,6 @@ namespace Blog.DataLayer.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("ApprovedByUserId")
-                        .HasColumnType("int");
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
@@ -140,33 +133,11 @@ namespace Blog.DataLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApprovedByUserId");
-
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("UserId");
 
                     b.ToTable("Posts2", (string)null);
-                });
-
-            modelBuilder.Entity("Blog.Domain.Entities.PostTag", b =>
-                {
-                    b.Property<int>("PostId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TagId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("getdate()");
-
-                    b.HasKey("PostId", "TagId");
-
-                    b.HasIndex("TagId");
-
-                    b.ToTable("PostsTagsMaps", (string)null);
                 });
 
             modelBuilder.Entity("Blog.Domain.Entities.Tag", b =>
@@ -179,18 +150,13 @@ namespace Blog.DataLayer.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Url")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
 
                     b.ToTable("Tags");
                 });
@@ -205,20 +171,30 @@ namespace Blog.DataLayer.Migrations
 
                     b.Property<string>("Login")
                         .IsRequired()
-                        .HasMaxLength(25)
-                        .HasColumnType("nvarchar(25)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Login")
-                        .IsUnique();
-
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("PostTag", b =>
+                {
+                    b.Property<int>("PostsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TagsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("PostsId", "TagsId");
+
+                    b.HasIndex("TagsId");
+
+                    b.ToTable("PostTag");
                 });
 
             modelBuilder.Entity("Blog.Domain.Entities.ContactInfo", b =>
@@ -234,10 +210,6 @@ namespace Blog.DataLayer.Migrations
 
             modelBuilder.Entity("Blog.Domain.Entities.Post", b =>
                 {
-                    b.HasOne("Blog.Domain.Entities.User", "ApprovedBy")
-                        .WithMany("PostsApproved")
-                        .HasForeignKey("ApprovedByUserId");
-
                     b.HasOne("Blog.Domain.Entities.Category", "Category")
                         .WithMany("Posts")
                         .HasForeignKey("CategoryId")
@@ -250,30 +222,24 @@ namespace Blog.DataLayer.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ApprovedBy");
-
                     b.Navigation("Category");
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Blog.Domain.Entities.PostTag", b =>
+            modelBuilder.Entity("PostTag", b =>
                 {
-                    b.HasOne("Blog.Domain.Entities.Post", "Post")
+                    b.HasOne("Blog.Domain.Entities.Post", null)
                         .WithMany()
-                        .HasForeignKey("PostId")
+                        .HasForeignKey("PostsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Blog.Domain.Entities.Tag", "Tag")
+                    b.HasOne("Blog.Domain.Entities.Tag", null)
                         .WithMany()
-                        .HasForeignKey("TagId")
+                        .HasForeignKey("TagsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Post");
-
-                    b.Navigation("Tag");
                 });
 
             modelBuilder.Entity("Blog.Domain.Entities.Category", b =>
@@ -287,8 +253,6 @@ namespace Blog.DataLayer.Migrations
                         .IsRequired();
 
                     b.Navigation("Posts");
-
-                    b.Navigation("PostsApproved");
                 });
 #pragma warning restore 612, 618
         }
