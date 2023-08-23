@@ -3,12 +3,16 @@ using Accountancy.DataLayer.Extensions;
 using Accountancy.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
 using Attribute = Accountancy.Domain.Entities.Attribute;
 
 namespace Accountancy.DataLayer;
 
 public class AppDbContext : DbContext
 {
+	public static readonly ILoggerFactory _loggerFactory = new NLogLoggerFactory();
+
 	public DbSet<Address> Addresses { get; set; }
 	public DbSet<Attribute> Attributes { get; set; }
 	public DbSet<Customer> Customers { get; set; }
@@ -21,7 +25,13 @@ public class AppDbContext : DbContext
 	{
 		var builder = new ConfigurationBuilder().AddJsonFile("AppSettings.json", true, true);
 		var config = builder.Build();
-		optionsBuilder.UseSqlServer(config["ConnectionString"]);
+
+		optionsBuilder
+			.UseSqlServer(config["ConnectionString"])
+			.UseLoggerFactory(_loggerFactory)
+			.LogTo(Console.WriteLine, new[] { DbLoggerCategory.Database.Command.Name }, LogLevel.Information)
+			.EnableSensitiveDataLogging();
+
 	}
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
