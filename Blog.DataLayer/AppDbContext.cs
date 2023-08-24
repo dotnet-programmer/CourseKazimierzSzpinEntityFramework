@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Blog.DataLayer.Extensions;
 using Blog.Domain.Entities;
+using Blog.Domain.Entities.Views;
 using Blog.Domain.Entities.Query;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -20,6 +21,7 @@ public class AppDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<PostTag> PostTags { get; set; }
     public DbSet<Custom> Customs { get; set; }
+    public DbSet<UserFullInfo> UserFullInfo { get; set; }
 
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 	{

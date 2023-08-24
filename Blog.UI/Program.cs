@@ -257,55 +257,329 @@
 
 // ***************************************************************************************************************
 
+//using Blog.DataLayer;
+//using Microsoft.EntityFrameworkCore;
+
+//using (AppDbContext context = new())
+//{
+//	var userWithId3 = context.Users.Find(3);
+//	Console.WriteLine(userWithId3.Login);
+
+//	var users = await context.Users.ToListAsync();
+//	foreach (var item in users)
+//	{
+//		Console.WriteLine(item.Login);
+//	}
+
+//	// eager loading
+//	var posts = context.Posts
+//		.Include(x => x.User)
+//		.ThenInclude(x => x.PostsApproved.Where(x => x.UserId > 1))
+//		.Include(x => x.ApprovedBy)
+//		.ToList();
+//	foreach (var item in posts)
+//	{
+//		Console.WriteLine(item.User.Login);
+//	}
+
+//	//// explicit loading
+//	//var post = await context
+//	//	.Posts
+//	//	.FirstOrDefaultAsync();
+//	//// ładowanie 1 elementu
+//	//context.Entry(post).Reference(x => x.User).Load();
+//	//// ładowanie kolekcji
+//	//context.Entry(post).Collection(x => x.Tags).Load();
+//	//context.Entry(post).Collection(x => x.Tags).Query().Where(x => x.Id > 3).Load();
+//	//Console.WriteLine(post.User.Login);
+
+//	////raw sql
+//	//var title = "Title 7";
+//	////var posts2 = await context.Posts.FromSqlRaw("SELECT * FROM Posts2 WHERE Title2={0}", title).ToListAsync();
+//	//// interpolated zabezpiecza przed sql injection
+//	//var posts2 = await context.Posts.FromSqlInterpolated($"SELECT * FROM Posts2 WHERE Title2={title}").ToListAsync();
+//	//foreach (var item in posts2)
+//	//{
+//	//	Console.WriteLine(item.Title);
+//	//}
+
+//	var posts3 = await context.Customs.FromSqlRaw("SELECT Description as FullDescription FROM Posts2").ToListAsync();
+//	foreach (var item in posts3)
+//	{
+//		Console.WriteLine(item.FullDescription);
+//	}
+//}
+
+// ***************************************************************************************************************
+
 using Blog.DataLayer;
+using Blog.DataLayer.Extensions;
+using Blog.Domain.Entities;
+using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
+
+Category category = new()
+{
+	Name = "New Category 1",
+	Description = "New Description 1",
+	Url = "cat1"
+};
 
 using (AppDbContext context = new())
 {
-	var userWithId3 = context.Users.Find(3);
-	Console.WriteLine(userWithId3.Login);
+	context.Categories.Add(category);
+	await context.SaveChangesAsync();
+}
 
-	var users = await context.Users.ToListAsync();
+Category postCategory = new()
+{
+	Name = "New Category 2",
+	Description = "New Description 2",
+	Url = "cat2"
+};
+ContactInfo contactInfo = new()
+{
+	Email = "new@mail.1"
+};
+User user = new()
+{
+	Login = "New user 1",
+	Password = "password",
+	ContactInfo = contactInfo
+};
+Post post = new()
+{
+	ApprovedBy = user,
+	User = user,
+	Category = postCategory,
+	Description = "desc1",
+	PostedOn = DateTime.Now,
+	Published = true,
+	ShortDescription = "desc1",
+	Title = "New Title 1",
+	Type = Blog.Domain.Enums.PostType.Plain,
+	Url = "url",
+	Tags = new List<Tag>()
+	{
+		new Tag { Name = "tagasdf", Url = "tag-asdf" },
+		new Tag { Name = "tagassdfa", Url = "tag-afdasas" }
+	}
+};
+using (AppDbContext context = new())
+{
+	context.Posts.Add(post);
+	DisplayEntriesInfo(context);
+	await context.SaveChangesAsync();
+}
+
+Post post2 = new()
+{
+	ApprovedByUserId = 2, // jeśli istnieje taki user w bazie danych to można wpisać od razu jego Id
+	UserId = 3,
+	CategoryId = 1,
+	Description = "desc2",
+	PostedOn = DateTime.Now,
+	Published = false,
+	ShortDescription = "desc2",
+	Title = "New Title 2",
+	Type = Blog.Domain.Enums.PostType.Sponsored,
+	Url = "url2",
+};
+List<PostTag> postTag = new()
+{
+	new PostTag{ TagId = 5, Post =  post2, CreatedDate = DateTime.Now }
+};
+using (AppDbContext context = new())
+{
+	context.Posts.Add(post2);
+	//context.PostTags.AddRange(postTag);
+	// użycie nugeta EFCore.BulkExtensions, optymalizuje dodawanie wielu rekordów do bazy danych
+	await context.BulkInsertAsync(postTag);
+	DisplayEntriesInfo(context);
+	//używając BulkExtension nie trzeba wywoływać Save
+	//await context.SaveChangesAsync();
+}
+
+static void DisplayEntriesInfo(AppDbContext context)
+{
+	foreach (var item in context.ChangeTracker.Entries())
+	{
+		Console.WriteLine($"--- Encja: {item.Entity.GetType().Name}, Stan: {item.State}");
+	}
+}
+
+// edycja obiektu będącego w tym samym DbContext - ten sposób aktualizuje tylko zmienione pole w tabeli, ale wywołuje 2 zapytania, najpierw select, później update
+using (AppDbContext context = new())
+{
+	Category category1 = await context.Categories.FindAsync(4);
+	category1.Description = "y";
+	DisplayEntriesInfo(context);
+	await context.SaveChangesAsync();
+}
+
+// edycja obiektu z innego miejsca niż DbContext
+Category category2 = null;
+using (AppDbContext context = new())
+{
+	category2 = await context.Categories.FindAsync(4);
+	category2.Description = "x";
+}
+using (AppDbContext context = new())
+{
+	// albo metoda Update - ten sposób aktualizuje wszystkie pola w tabeli
+	//context.Categories.Update(category2);
+	// albo dołączając stan zmodyfikowany
+	context.Categories.Attach(category2).State = EntityState.Modified;
+	await context.SaveChangesAsync();
+}
+
+// aktualizacja obiektów powiązanych
+using (AppDbContext context = new())
+{
+	var post3 = await context.Posts.FindAsync(7);
+	post3.ApprovedByUserId = 5;
+	await context.SaveChangesAsync();
+}
+
+ContactInfo contactInfo2 = new()
+{
+	Email = "abc@wp.pl"
+};
+User user2 = new()
+{
+	Login = "test12345",
+	Password = "password",
+	ContactInfo = contactInfo2
+};
+using (AppDbContext context = new())
+{
+	var post4 = await context.Posts.FindAsync(5);
+	post4.ApprovedBy = user2;
+	await context.SaveChangesAsync();
+}
+
+// aktualizacja obiektów z relacją wiele:wiele
+List<Tag> newTags = new()
+{
+	new Tag { Id = 1 },
+	new Tag { Id = 2 },
+	new Tag { Id = 3 },
+	new Tag { Id = 4 },
+};
+using (AppDbContext context = new())
+{
+	var post5 = await context.Posts.FindAsync(7);
+
+	var postTagsFromDB = await context.PostTags
+		.Where(x => x.PostId == post5.Id)
+		.AsNoTracking()
+		.ToListAsync();
+
+	context.TryUpdateManyToMany(
+		postTagsFromDB,
+		newTags.Select(x => new PostTag { TagId = x.Id, PostId = post5.Id }),
+		x => x.TagId);
+
+	await context.SaveChangesAsync();
+}
+
+// aktualizacja wielu danych jednocześnie
+using (AppDbContext context = new())
+{
+	var tags = await context.Tags.ToListAsync();
+	foreach (var item in tags)
+	{
+		item.Name += "1";
+	}
+	// wolniejszy zapis używając save z DbContext albo szybszy używając biblioteki EFCore.BulkExtensions
+	//await context.SaveChangesAsync();
+	await context.BulkUpdateAsync(tags);
+}
+
+// usuwanie danych
+using (AppDbContext context = new())
+{
+	Category category1 = await context.Categories.FindAsync(10);
+	// jeżeli znane jest Id obiektu to można od razu go użyć bez znajdywania wpisu w bazie danych poprzez stworzenie nowego obiektu zawierającego tylko to Id
+	// context.Categories.Remowe(new Category { Id = 9 });
+	context.Categories.Remove(category1);
+	await context.SaveChangesAsync();
+}
+
+// usuwanie danych które są używane jako klucze obce
+// usunąć najpierw wpisy powiązane a na końcu główny wpis
+Category category3 = new Category { Id = 4 };
+using (AppDbContext context = new())
+{
+	var postsToDelete = await context.Posts.Where(x => x.CategoryId == category3.Id).ToListAsync();
+	context.Posts.RemoveRange(postsToDelete);
+	// await context.BulkDeleteAsync(postsToDelete);
+	context.Categories.Remove(category3);
+	await context.SaveChangesAsync();
+}
+
+// można zrobić też tzw. Soft Delete, czyli nie usuwać danych, a dodać flagę IsDeleted, która będzie oznaczana na True przy "usuwaniu" danych
+// przy pobieraniu danych pamiętać o dodawaniu warunku Where(x => x.IsDeleted == False)
+using (AppDbContext context = new())
+{
+	Category category4 = await context.Categories.FindAsync(11);
+	category4.IsDeleted = true;
+	await context.SaveChangesAsync();
+}
+
+// transakcje
+using (AppDbContext context = new())
+{
+	using var transaction = await context.Database.BeginTransactionAsync();
+	context.Categories.Add(category);
+	context.Categories.Remove(new Category { Id = 5 });
+	context.Categories.Remove(new Category { Id = 999 });
+	await context.SaveChangesAsync();
+	await transaction.CommitAsync();
+}
+
+// widoki
+// 1. Dodać nową pustą migrację
+// 2. Dodać w niej ręcznie sql tworzący widok
+// 3. Dodać nową klasę (encję) zawierającą pola z widoku
+// 4. Dodać w AppDbContext nowy DbSet
+// 5. Dodać plik konfiguracyjny z zapisem builder.HasNoKey().ToView("UserFullInfoView"); 
+//    HasNoKey oznacza żeby nie tworzyć nowej tabeli w bazie danych
+// 6. update-database
+using (AppDbContext context = new())
+{
+	var users = await context.UserFullInfo.ToListAsync();
 	foreach (var item in users)
 	{
-		Console.WriteLine(item.Login);
-	}
+        Console.WriteLine($"{item.Id} - {item.Login} - {item.Email}");
+    }
+}
 
-	// eager loading
-	var posts = context.Posts
-		.Include(x => x.User)
-		.ThenInclude(x => x.PostsApproved.Where(x => x.UserId > 1))
-		.Include(x => x.ApprovedBy)
-		.ToList();
+// procedury (2 rodzaje, zwracajace dane i bez zwracanych danych, w EF Core obie wywoływane w inny sposób)
+// 1. Dodać nową pustą migrację
+// 2. Dodać w niej ręcznie sql tworzący procedurę
+// 3. a) Jeżeli procedura nie zwraca wartości, to nie trzeba dodawać nowej encji (klasy)
+// 3. b) Jeżeli procedura zwraca wartość odpowiadającą jednej z klas, to nie trzeba tworzyc nowej
+// 3. c) Jeżeli procedura zwraca wartość której nie ma w klasach encji, to trzeba dodać nową
+//    Dodać w AppDbContext nowy DbSet
+//    Dodać plik konfiguracyjny z zapisem builder.HasNoKey(); 
+// 4. update-database
+
+// Aby wywołać procedurę zwracającą wartość trzeba użyć FromSqlInterpolated przekazując nazwę procedury i ew. parametr wywołania:
+using (AppDbContext context = new())
+{
+	var posts = await context.Posts
+		.FromSqlInterpolated($"AllPostInCategory {11}") 
+		.ToListAsync();
 	foreach (var item in posts)
 	{
-		Console.WriteLine(item.User.Login);
+		Console.WriteLine($"{item.Title}");
 	}
+}
 
-	//// explicit loading
-	//var post = await context
-	//	.Posts
-	//	.FirstOrDefaultAsync();
-	//// ładowanie 1 elementu
-	//context.Entry(post).Reference(x => x.User).Load();
-	//// ładowanie kolekcji
-	//context.Entry(post).Collection(x => x.Tags).Load();
-	//context.Entry(post).Collection(x => x.Tags).Query().Where(x => x.Id > 3).Load();
-	//Console.WriteLine(post.User.Login);
-
-	////raw sql
-	//var title = "Title 7";
-	////var posts2 = await context.Posts.FromSqlRaw("SELECT * FROM Posts2 WHERE Title2={0}", title).ToListAsync();
-	//// interpolated zabezpiecza przed sql injection
-	//var posts2 = await context.Posts.FromSqlInterpolated($"SELECT * FROM Posts2 WHERE Title2={title}").ToListAsync();
-	//foreach (var item in posts2)
-	//{
-	//	Console.WriteLine(item.Title);
-	//}
-
-	var posts3 = await context.Customs.FromSqlRaw("SELECT Description as FullDescription FROM Posts2").ToListAsync();
-	foreach (var item in posts3)
-	{
-		Console.WriteLine(item.FullDescription);
-	}
+// Aby wywołać procedurę bez zwracanej wartości trzeba wywołać ExecuteSqlInterpolatedAsync na context.Database, przekazując nazwę procedury i ew. parametr wywołania
+using (AppDbContext context = new())
+{
+	int value1 = 666;
+	await context.Database.ExecuteSqlInterpolatedAsync($"DeleteArticle {value1}");
 }

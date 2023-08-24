@@ -29,5 +29,10 @@ internal class CategoryConfiguration : IEntityTypeConfiguration<Category>
 		builder
 			.Property(x => x.Description)
 			.HasMaxLength(200);
+
+		builder
+			.Property(x => x.IsDeleted)
+			.IsRequired(false)
+			.HasDefaultValue(false);
 	}
 }

@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Accountancy.DataLayer.Extensions;
 using Accountancy.Domain.Entities;
+using Accountancy.Domain.Entities.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -20,6 +21,7 @@ public class AppDbContext : DbContext
 	public DbSet<InvoicePosition> InvoicePositions { get; set; }
 	public DbSet<Product> Products { get; set; }
 	public DbSet<AttributeProduct> AttributeProducts { get; set; }
+	public DbSet<CustomerAddressView> CustomerAddressView { get; set; }
 
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 	{
