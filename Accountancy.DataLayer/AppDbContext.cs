@@ -33,15 +33,11 @@ public class AppDbContext : DbContext
 			.UseLoggerFactory(_loggerFactory)
 			.LogTo(Console.WriteLine, new[] { DbLoggerCategory.Database.Command.Name }, LogLevel.Information)
 			.EnableSensitiveDataLogging();
-
 	}
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
 		modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
-		//modelBuilder.SeedCustomers();
-		//modelBuilder.SeedAddresses();
 		modelBuilder.SeedData();
 	}
 }

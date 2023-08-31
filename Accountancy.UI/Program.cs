@@ -6,7 +6,7 @@ using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using Attribute = Accountancy.Domain.Entities.Attribute;
 
-// ***** HOMEWORK 1 *****
+#region HOMEWORK 1
 
 //using (AppDbContext context = new())
 //{
@@ -53,7 +53,9 @@ using Attribute = Accountancy.Domain.Entities.Attribute;
 //		.ToListAsync();
 //}
 
-// ***** HOMEWORK 2 *****
+#endregion HOMEWORK 1
+
+#region HOMEWORK 2
 
 // 1) Dodaj do każdej tabeli przynajmniej 1 rekord za pomocą Entity Framework Core.
 
@@ -201,3 +203,5 @@ using (AppDbContext context = new())
 	int value1 = 666;
 	await context.Database.ExecuteSqlInterpolatedAsync($"DeleteProduct {value1}");
 }
+
+#endregion HOMEWORK 2
