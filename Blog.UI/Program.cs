@@ -35,10 +35,76 @@
 
 //Console.WriteLine();
 
+//var isAnyDotNetBookCheaperThan50 = books.Any(x => x.Price < 50 && x.Title.Contains(".NET"));
+//Console.WriteLine(isAnyDotNetBookCheaperThan50);
+
+//Console.WriteLine();
+
+//var isAllBooksIdGreaterThan0 = books.All(x => x.Id > 0);
+//Console.WriteLine(isAllBooksIdGreaterThan0);
+
+//Console.WriteLine();
+
+//var csharpBooksOrderedByPrice = books
+//	.Where(x => x.Title.Contains("C#"))
+//	.OrderBy(x => x.Price);
+//foreach (var item in csharpBooksOrderedByPrice)
+//{
+//	Console.WriteLine($"{item.Title} - {item.Price} zł);
+//}
+
+//Console.WriteLine();
+
+//var booksOrderedByPriceAndId = books
+//	.OrderBy(x => x.Price)
+//  .ThenBy(x => x.Id);
+//foreach (var item in booksOrderedByPriceAndId)
+//{
+//	Console.WriteLine($"{item.Title} - {item.Price} zł);
+//}
+
+//Console.WriteLine();
+
 //var csharpBooksCheaperThan50 = books.Where(x => x.Price < 50 && x.Title.Contains("C#"));
 //foreach (var item in csharpBooksCheaperThan50)
 //{
 //	Console.WriteLine(item.Title);
+//}
+
+//Console.WriteLine();
+
+// Różnice między First a Single
+
+// First - zwróci 1 element, nawet jak warunek spełnia więcej elementów, rzuca wyjątek,
+//			jeżeli żaden element nie spełnia warunku lub kolekcja pusta
+// FirstOrDefault - jedyna różnica, że w razie braku elementów zwraca domyślną wartość dla danego typu
+
+// Single - zwróci 1 element, wtedy gdy warunek spełnia tylko 1 element, w przeciwnym wypadku rzuca wyjątek że więcej niż 1 element spełnia podany warunek
+//			jeżeli żaden element nie spełnia warunku lub kolekcja pusta
+// SingleOrDefault - jedyna różnica, że w razie braku elementów zwraca domyślną wartość dla danego typu
+
+//var bookPrice2 = books.First(x => x.Price == 2);
+//var bookPrice3 = books.First(x => x.Price == 3);
+
+// są też metody Last i LastOrDefault
+
+//Console.WriteLine();
+
+//var booksTitleWithIdGreaterThan5 = books
+//	.Where(x => x.Id > 5)
+//	.Select(x => new MyBook { Info = $"{x.Id} - {x.Title}" });
+//foreach (var item in booksTitleWithIdGreaterThan5)
+//{
+//	Console.WriteLine(item.Info);
+//}
+
+// użycie obiektu anonimowego
+//var booksTitleWithIdGreaterThan5_2 = books
+//	.Where(x => x.Id > 5)
+//	.Select(x => new { Something = $"{x.Id} - {x.Title}" });
+//foreach (var item in booksTitleWithIdGreaterThan5_2)
+//{
+//	Console.WriteLine(item.Something);
 //}
 
 //class Book
@@ -46,6 +112,11 @@
 //	public int Id { get; set; }
 //	public string Title { get; set; }
 //	public decimal Price { get; set; }
+//}
+
+//class MyBook
+//{
+//    public string Info { get; set; }
 //}
 
 // ***************************************************************************************************************
@@ -69,7 +140,14 @@
 //	new Book{ Id = 6, Title = "Platforma .NET", Price = 20.1m, AuthorId = 2 },
 //};
 
-//var booksWithAuthorsName = books.Join(authors,
+// lista bazowa - books
+// dołączenie kolekcji - Join
+//	1) wskazanie dołączanej kolekcji 
+//	2) wskazanie klucza obcego w kolekcji bazowej (od której się startuje)
+//	3) wskazanie klucza głównego kolekcji dołączanej
+//	4) projekcja wyników
+//var booksWithAuthorsName = books.Join(
+//									  authors,
 //									  book => book.AuthorId,
 //									  author => author.AuthorId,
 //									  (book, author) => new { Title = book.Title, Author = author.Name })
@@ -87,6 +165,7 @@
 //	new Book{ Id = 3, Title = "Entity Framework Core", Price = 54m, AuthorId = 3 },
 //};
 
+// Except - zwraca nową kolekcję, zawierającą elementy z 1 kolekcji, które nie istnieją w drugiej
 //var booksNotRead = books.Except(readBooks, new BookComparer());
 //Console.WriteLine();
 //foreach (var item in booksNotRead)
@@ -94,6 +173,7 @@
 //    Console.WriteLine(item.Title);
 //}
 
+// Intersect - zwraca nową kolekcję, zawierajacą wspólne elementy obu podanych kolekcji
 //var commonBooks = books.Intersect(readBooks, new BookComparer());
 //Console.WriteLine();
 //foreach (var item in commonBooks)
@@ -101,6 +181,8 @@
 //	Console.WriteLine(item.Title);
 //}
 
+// Union - zwraca nową kolekcję, zawierajacą wszystkie elementy z obu kolekcji, ale bez powtórzeń,
+// czyli jeśli jakiś element istnieje w obu kolekcjach to zostanie zwrócony tylko 1 raz
 //var allDistinctBooks = books.Union(readBooks, new BookComparer());
 //Console.WriteLine();
 //foreach (var item in allDistinctBooks)
@@ -122,6 +204,7 @@
 //	public int AuthorId { get; set; }
 //}
 
+// używany np jako argument wywołania Distinct()
 //class BookComparer : IEqualityComparer<Book>
 //{
 //	public bool Equals(Book? x, Book? y) => x.Id == y.Id;
@@ -153,6 +236,7 @@
 
 // ***************************************************************************************************************
 
+// paginacja danych - wyświetlanie ograniczonej ilości rekordów; przydatne do ładowania tylko pojedynczej strony w tabelce
 //int pageSize = 5;
 //int pageNumber = 2;
 //var paginationBooks = books.Skip((pageNumber - 1) * pageSize).Take(pageSize);
@@ -206,14 +290,22 @@
 //}
 
 //Console.WriteLine("\n4) Pobierz tylko nazwę każdego studenta i posortuj ich najpierw po nazwie, a następnie malejąco po Id");
-//var answer4 = students.OrderBy(x => x.Name).ThenByDescending(x => x.StudentId).Select(x => x.Name);
+//var answer4 = students
+//	.OrderBy(x => x.Name)
+//	.ThenByDescending(x => x.StudentId)
+//	.Select(x => x.Name);
 //foreach (var student in answer4)
 //{
 //	Console.WriteLine($"{student}");
 //}
 
 //Console.WriteLine("\n5) Pobierz do jednej kolekcji informacji o nazwie studenta i opisie jego grupy.");
-//var answer5 = students.Join(groups, student => student.GroupId, group => group.GroupId, (student, group) => new { Name = student.Name, Group = group.Description });
+//var answer5 = students.Join(
+//		groups,
+//		student => student.GroupId,
+//		group => group.GroupId,
+//		(student, group) => new { Name = student.Name, Group = group.Description }
+//	);
 //foreach (var student in answer5)
 //{
 //	Console.WriteLine($"{student.Name} - {student.Group}");
@@ -224,9 +316,18 @@
 //Console.WriteLine(answer6);
 
 //Console.WriteLine("\n7) Pogrupuj studentów po grupie i wyświetl wszystkich studentów należącej do danej grupy po przecinku.");
-//var answer7 = students.Join(groups, s => s.GroupId, g => g.GroupId, (s, g) => new { Student = s, Group = g })
+//var answer7 = students
+//	.Join(
+//		groups,
+//		s => s.GroupId,
+//		g => g.GroupId,
+//		(s, g) => new { Student = s, Group = g })
 //	.GroupBy(x => x.Student.GroupId)
-//	.Select(x => new { GroupDesc = x.First().Group.Description, StudentsName = string.Join(", ", x.Select(x => x.Student.Name)) });
+//	.Select(x => new
+//	{
+//		GroupDesc = x.First().Group.Description,
+//		StudentsName = string.Join(", ", x.Select(x => x.Student.Name))
+//	});
 //foreach (var student in answer7)
 //{
 //	Console.WriteLine($"{student.GroupDesc} - {student.StudentsName}");
@@ -235,7 +336,9 @@
 //Console.WriteLine("\n8) Zastosuj paginacje i wyświetl 2 stronę z listą studentów zawierającą 10 rekordów.");
 //int pageSize = 10;
 //int pageNumber = 2;
-//var answer8 = students.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+//var answer8 = students
+//	.Skip((pageNumber - 1) * pageSize)
+//	.Take(pageSize);
 //foreach (var student in answer8)
 //{
 //	Console.WriteLine($"{student.StudentId}. {student.Name} - {student.Age} lat.");
@@ -272,6 +375,7 @@
 //	}
 
 //	// eager loading
+// ThenInclude - pobranie informacji o tabelach powiązanych z tabelą dołączoną przez Include
 //	var posts = context.Posts
 //		.Include(x => x.User)
 //		.ThenInclude(x => x.PostsApproved.Where(x => x.UserId > 1))
@@ -292,6 +396,12 @@
 //	//context.Entry(post).Collection(x => x.Tags).Load();
 //	//context.Entry(post).Collection(x => x.Tags).Query().Where(x => x.Id > 3).Load();
 //	//Console.WriteLine(post.User.Login);
+
+// wyłączenie śledzenia zmian
+//using (var context = new AppDbContext())
+//{
+//	context.ChangeTracker.QueryTrackingBehavior = Microsoft.EntityFrameworkCore.QueryTrackingBehavior.NoTracking;
+//}
 
 //	////raw sql
 //	//var title = "Title 7";
@@ -385,17 +495,20 @@ Post post2 = new()
 	Type = Blog.Domain.Enums.PostType.Sponsored,
 	Url = "url2",
 };
-List<PostTag> postTag = new()
+List<PostTag> postTags = new()
 {
 	new PostTag{ TagId = 5, Post =  post2, CreatedDate = DateTime.Now }
 };
 using (AppDbContext context = new())
 {
 	context.Posts.Add(post2);
+
 	//context.PostTags.AddRange(postTag);
 	// użycie nugeta EFCore.BulkExtensions, optymalizuje dodawanie wielu rekordów do bazy danych
-	await context.BulkInsertAsync(postTag);
+	await context.BulkInsertAsync(postTags);
+
 	DisplayEntriesInfo(context);
+
 	//używając BulkExtension nie trzeba wywoływać Save
 	//await context.SaveChangesAsync();
 }
@@ -428,8 +541,10 @@ using (AppDbContext context = new())
 {
 	// albo metoda Update - ten sposób aktualizuje wszystkie pola w tabeli
 	//context.Categories.Update(category2);
+
 	// albo dołączając stan zmodyfikowany
 	context.Categories.Attach(category2).State = EntityState.Modified;
+
 	await context.SaveChangesAsync();
 }
 
@@ -538,6 +653,54 @@ using (AppDbContext context = new())
 	await transaction.CommitAsync();
 }
 
+// konflikty współbieżności
+// domyślne zachowanie - jeśli kilka zmian w kilku kontekstach, to w bazie danych zostana zapisane zmiany w tym, który był zapisany jako ostatni
+// domyślne zachowanie można zmienić - na dowolną właściwość można ustawić tzw. token współbieżności (concurrency token), który sprawi że zostanie rzucony wyjątek błędu zapisu
+
+using (var context1 = new AppDbContext())
+{
+	var category1 = await context1.Categories.FindAsync(2);
+	category1.Description = "123";
+
+	using (var context2 = new AppDbContext())
+	{
+		var category1a = await context2.Categories.FindAsync(2);
+		category1a.Description = "321";
+
+		try
+		{
+			await context1.SaveChangesAsync();
+			await context2.SaveChangesAsync();
+		}
+		catch (DbUpdateConcurrencyException exception)
+		{
+			foreach (var item in exception.Entries)
+			{
+				if (item.Entity is Category)
+				{
+					var proposedValues = item.CurrentValues;
+					var databaseValues = item.GetDatabaseValues();
+					foreach (var property in proposedValues.Properties)
+					{
+						var proposedValue = proposedValues[property];
+						var databaseValue = databaseValues[property];
+						if (proposedValue != databaseValue)
+						{
+							//
+						}
+					}
+				}
+			}
+			throw;
+		}
+		catch (Exception)
+		{
+
+			throw;
+		}
+	}
+}
+
 // widoki
 // 1. Dodać nową pustą migrację
 // 2. Dodać w niej ręcznie sql tworzący widok
@@ -564,6 +727,12 @@ using (AppDbContext context = new())
 //    Dodać w AppDbContext nowy DbSet
 //    Dodać plik konfiguracyjny z zapisem builder.HasNoKey(); 
 // 4. update-database
+
+// Aby wywołać widok w kontekście, wystarczy wywołać nazwę tego widoku:
+using (AppDbContext context = new())
+{
+	var users = await context.UserFullInfo.ToListAsync();
+}
 
 // Aby wywołać procedurę zwracającą wartość trzeba użyć FromSqlInterpolated przekazując nazwę procedury i ew. parametr wywołania:
 using (AppDbContext context = new())

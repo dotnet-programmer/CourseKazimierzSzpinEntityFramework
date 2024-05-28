@@ -10,7 +10,7 @@ using Attribute = Accountancy.Domain.Entities.Attribute;
 
 //using (AppDbContext context = new())
 //{
-//	Console.WriteLine("3) Napisz pierwszą kwerendę, która pobierze wszystkie faktury, dołączając właściwości nawigacyjne,");
+//	Console.WriteLine("3) Napisz pierwszą kwerendę, która pobierze wszystkie faktury, dołączając właściwości nawigacyjne, czyli wszystkie informacje o kliencie wraz z adresem oraz o pozycjach dla każdej faktury bez śledzenie danych.");
 //	var invoices = await context.Invoices
 //		.Include(x => x.Customer)
 //		.ThenInclude(x => x.Address)
@@ -19,10 +19,10 @@ using Attribute = Accountancy.Domain.Entities.Attribute;
 //		.ToListAsync();
 
 //	Console.WriteLine("4) Pobierz produkty, których cena jest z przedziału od 100 do 200 wraz z atrybutami, ale tylko takimi, które mają Id większe niż 5 bez śledzenie danych.");
+// context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
 //	var products = await context.Products
 //		.Where(x => x.Price > 100 && x.Price < 200)
 //		.Include(x => x.Attributes.Where(x => x.AttributeId > 5))
-//		.AsNoTracking()
 //		.ToListAsync();
 
 //	Console.WriteLine("5) Pobierz pełne numery wszystkich faktur, to znaczy Numer/Miesiac/Rok wraz z ich średnią wartością dla 1 pozycji faktury.");

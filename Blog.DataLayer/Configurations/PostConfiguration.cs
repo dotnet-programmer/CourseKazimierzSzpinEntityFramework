@@ -56,13 +56,20 @@ internal class PostConfiguration : IEntityTypeConfiguration<Post>
 			.HasForeignKey(x => x.CategoryId)
 			.OnDelete(DeleteBehavior.Restrict);
 
-		// relacja wiele:wiele
+		// relacja wiele:wiele - zmiana nazwy tabeli łączącej
+		//builder
+		//	.HasMany(x => x.Tags)
+		//	.WithMany(x => x.Posts)
+		//	.UsingEntity(x => x.ToTable("PostsTagsMaps"));
+
+		// relacja wiele:wiele - dodanie nowego pola w tabeli łączącej
 		builder
 			.HasMany(x => x.Tags)
 			.WithMany(x => x.Posts)
 			.UsingEntity<PostTag>(
 				x => x.HasOne(x => x.Tag).WithMany().HasForeignKey(x => x.TagId),
 				x => x.HasOne(x => x.Post).WithMany().HasForeignKey(x => x.PostId))
-			.Property(x => x.CreatedDate).HasDefaultValueSql("getdate()");
+			.Property(x => x.CreatedDate)
+			.HasDefaultValueSql("getdate()");
 	}
 }

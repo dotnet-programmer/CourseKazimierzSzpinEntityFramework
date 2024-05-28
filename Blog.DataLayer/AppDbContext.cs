@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
+using Blog.DataLayer.Configurations;
 
 namespace Blog.DataLayer;
 
@@ -27,6 +28,7 @@ public class AppDbContext : DbContext
 	{
 		var builder = new ConfigurationBuilder().AddJsonFile("AppSettings.json", true, true);
 		var config = builder.Build();
+
 		optionsBuilder
 			// ustawienie connection string dla SQL Server
 			.UseSqlServer(config["ConnectionString"])
@@ -35,17 +37,26 @@ public class AppDbContext : DbContext
 			.LogTo(Console.WriteLine, new[] { DbLoggerCategory.Database.Command.Name }, LogLevel.Information)
 			.EnableSensitiveDataLogging()
 
+			// lazy loading - nuget - Microsoft.EntityFrameworkCore.Proxies + wszystkie właściwości nawigacyjne oznaczyć słowem kluczowym virtual
+			// .UseLazyLoadingProxies()
+
+			// wyłączenie śledzenia zmian dla całego contextu
+			//.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
+
 			// logowanie za pomocą NLog do pliku
 			.UseLoggerFactory(_loggerFactory);
-
-		// lazy loading - nuget - Microsoft.EntityFrameworkCore.Proxies + wszystkie właściwości nawigacyjne oznaczyć słowem kluczowym virtual
-		// .UseLazyLoadingProxies();
 	}
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
+		// dodanie pojedynczej konfiguracji
+		//modelBuilder.ApplyConfiguration(new PostConfiguration());
+
+		// znajdź wszystkie klasy konfiguracyjne implementujące interfejs IEntityTypeConfiguration i zastosuj te konfiguracje
 		modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
+		// wypełnienie bazy danych początkowymi danymi podczas tworzenia
+		// konfiguracja tego zrobiona jako metoda rozszerzająca ModelBuilder
 		modelBuilder.SeedCategories();
 	}
 }

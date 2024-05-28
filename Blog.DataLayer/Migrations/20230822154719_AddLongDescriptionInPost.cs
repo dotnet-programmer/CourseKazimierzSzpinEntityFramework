@@ -17,6 +17,7 @@ namespace Blog.DataLayer.Migrations
                 nullable: false,
                 defaultValue: "");
 
+			// INFO - dodanie własnej komendy SQL, która aktualizuje każde pole LongDescription wartością z Description
 			migrationBuilder.Sql(@"UPDATE Posts SET LongDescription = Description;");
         }
 
