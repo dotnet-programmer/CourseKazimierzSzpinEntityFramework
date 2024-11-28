@@ -6,7 +6,7 @@ public class Category
 	public string Name { get; set; }
 	public string Url { get; set; }
 	public string Description { get; set; }
-    public bool? IsDeleted { get; set; }
+	public bool? IsDeleted { get; set; }
 
     public ICollection<Post> Posts { get; set; } = new HashSet<Post>();
 }

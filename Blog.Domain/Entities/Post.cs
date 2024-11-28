@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Blog.Domain.Enums;
+﻿using Blog.Domain.Enums;
 
 namespace Blog.Domain.Entities;
 

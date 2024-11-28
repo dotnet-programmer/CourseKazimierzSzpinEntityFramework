@@ -1,13 +1,12 @@
 ﻿using System.Reflection;
 using Blog.DataLayer.Extensions;
 using Blog.Domain.Entities;
-using Blog.Domain.Entities.Views;
 using Blog.Domain.Entities.Query;
+using Blog.Domain.Entities.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
-using Blog.DataLayer.Configurations;
 
 namespace Blog.DataLayer;
 
@@ -16,13 +15,13 @@ public class AppDbContext : DbContext
 	public static readonly ILoggerFactory _loggerFactory = new NLogLoggerFactory();
 
 	public DbSet<Category> Categories { get; set; }
-    public DbSet<ContactInfo> ContactInfo { get; set; }
-    public DbSet<Post> Posts { get; set; }
-    public DbSet<Tag> Tags { get; set; }
-    public DbSet<User> Users { get; set; }
-    public DbSet<PostTag> PostTags { get; set; }
-    public DbSet<Custom> Customs { get; set; }
-    public DbSet<UserFullInfo> UserFullInfo { get; set; }
+	public DbSet<ContactInfo> ContactInfo { get; set; }
+	public DbSet<Post> Posts { get; set; }
+	public DbSet<Tag> Tags { get; set; }
+	public DbSet<User> Users { get; set; }
+	public DbSet<PostTag> PostTags { get; set; }
+	public DbSet<Custom> Customs { get; set; }
+	public DbSet<UserFullInfo> UserFullInfo { get; set; }
 
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 	{

@@ -6,9 +6,6 @@ namespace Accountancy.DataLayer.Configurations;
 
 internal class AttributeProductConfiguration : IEntityTypeConfiguration<AttributeProduct>
 {
-	public void Configure(EntityTypeBuilder<AttributeProduct> builder)
-	{
-		builder
+	public void Configure(EntityTypeBuilder<AttributeProduct> builder) => builder
 			.ToTable("AttributeProduct");
-	}
 }

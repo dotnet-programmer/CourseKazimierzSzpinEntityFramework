@@ -19,11 +19,11 @@ internal class CategoryConfiguration : IEntityTypeConfiguration<Category>
 			.IsUnique();
 
 		builder
-			.Property(x=>x.Name)
+			.Property(x => x.Name)
 			.HasMaxLength(50);
 
 		builder
-			.Property(x=>x.Url)
+			.Property(x => x.Url)
 			.HasMaxLength(500);
 
 		builder

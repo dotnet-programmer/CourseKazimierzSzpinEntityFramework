@@ -74,12 +74,12 @@ Customer customer = new()
 	Email = "nc1@nc1",
 	Address = address,
 };
-List<Attribute> attributes = new()
-{
+List<Attribute> attributes =
+[
 	new Attribute { Name = "NowyAtrybut1" },
 	new Attribute { Name = "NowyAtrybut2" },
 	new Attribute { Name = "NowyAtrybut3" },
-};
+];
 Invoice invoice = new()
 {
 	Number = 1,
@@ -90,8 +90,8 @@ Invoice invoice = new()
 	IsPaid = false,
 	Customer = customer,
 	TotalPrice = 1,
-	InvoicePositions = new List<InvoicePosition>
-	{
+	InvoicePositions =
+	[
 		new InvoicePosition
 		{
 			Quantity = 5,
@@ -102,7 +102,7 @@ Invoice invoice = new()
 				Attributes = attributes
 			}
 		}
-	}
+	]
 };
 using (AppDbContext context = new())
 {
@@ -132,12 +132,11 @@ using (AppDbContext context = new())
 	//2 - 3 - 4
 	context.TryUpdateManyToMany(
 		productAttributesFromDB,
-		new List<AttributeProduct>
-		{
-			new AttributeProduct { ProductId = productId, AttributeId = 2 },
-			new AttributeProduct { ProductId = productId, AttributeId = 3 },
-			new AttributeProduct { ProductId = productId, AttributeId = 4 },
-		},
+		[
+			new() { ProductId = productId, AttributeId = 2 },
+			new() { ProductId = productId, AttributeId = 3 },
+			new() { ProductId = productId, AttributeId = 4 },
+		],
 		x => x.AttributeId
 		);
 	await context.SaveChangesAsync();
@@ -151,7 +150,7 @@ using (AppDbContext context = new())
 }
 
 // 5) Dodaj 3000 nowych produktów do bazy danych.
-List<Product> products = new();
+List<Product> products = [];
 for (int i = 0; i < 3000; i++)
 {
 	products.Add(new Product { Name = $"ProductName{i}", Price = i + 10 });

@@ -14,7 +14,7 @@ public class Invoice
 	public bool IsPaid { get; set; }
 
 	public int CustomerId { get; set; }
-    public Customer Customer { get; set; }
+	public Customer Customer { get; set; }
 
     public ICollection<InvoicePosition> InvoicePositions { get; set; } = new HashSet<InvoicePosition>();
 }

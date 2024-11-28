@@ -469,11 +469,11 @@ Post post = new()
 	Title = "New Title 1",
 	Type = Blog.Domain.Enums.PostType.Plain,
 	Url = "url",
-	Tags = new List<Tag>()
-	{
+	Tags =
+	[
 		new Tag { Name = "tagasdf", Url = "tag-asdf" },
 		new Tag { Name = "tagassdfa", Url = "tag-afdasas" }
-	}
+	]
 };
 using (AppDbContext context = new())
 {
@@ -495,10 +495,10 @@ Post post2 = new()
 	Type = Blog.Domain.Enums.PostType.Sponsored,
 	Url = "url2",
 };
-List<PostTag> postTags = new()
-{
+List<PostTag> postTags =
+[
 	new PostTag{ TagId = 5, Post =  post2, CreatedDate = DateTime.Now }
-};
+];
 using (AppDbContext context = new())
 {
 	context.Posts.Add(post2);
@@ -574,13 +574,13 @@ using (AppDbContext context = new())
 }
 
 // aktualizacja obiektów z relacją wiele:wiele
-List<Tag> newTags = new()
-{
+List<Tag> newTags =
+[
 	new Tag { Id = 1 },
 	new Tag { Id = 2 },
 	new Tag { Id = 3 },
 	new Tag { Id = 4 },
-};
+];
 using (AppDbContext context = new())
 {
 	var post5 = await context.Posts.FindAsync(7);
@@ -623,7 +623,7 @@ using (AppDbContext context = new())
 
 // usuwanie danych które są używane jako klucze obce
 // usunąć najpierw wpisy powiązane a na końcu główny wpis
-Category category3 = new Category { Id = 4 };
+Category category3 = new() { Id = 4 };
 using (AppDbContext context = new())
 {
 	var postsToDelete = await context.Posts.Where(x => x.CategoryId == category3.Id).ToListAsync();
@@ -714,8 +714,8 @@ using (AppDbContext context = new())
 	var users = await context.UserFullInfo.ToListAsync();
 	foreach (var item in users)
 	{
-        Console.WriteLine($"{item.Id} - {item.Login} - {item.Email}");
-    }
+		Console.WriteLine($"{item.Id} - {item.Login} - {item.Email}");
+	}
 }
 
 // procedury (2 rodzaje, zwracajace dane i bez zwracanych danych, w EF Core obie wywoływane w inny sposób)
@@ -738,7 +738,7 @@ using (AppDbContext context = new())
 using (AppDbContext context = new())
 {
 	var posts = await context.Posts
-		.FromSqlInterpolated($"AllPostInCategory {11}") 
+		.FromSqlInterpolated($"AllPostInCategory {11}")
 		.ToListAsync();
 	foreach (var item in posts)
 	{
