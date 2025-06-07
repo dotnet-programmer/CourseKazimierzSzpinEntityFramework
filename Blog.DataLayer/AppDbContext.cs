@@ -10,6 +10,7 @@ using NLog.Extensions.Logging;
 
 namespace Blog.DataLayer;
 
+// ta klasa znajduje się w projekcie DataLayer, bo jest ściśle połączona z Entity Framework Core
 public class AppDbContext : DbContext
 {
 	public static readonly ILoggerFactory _loggerFactory = new NLogLoggerFactory();

@@ -8,5 +8,5 @@ public class Category
 	public string Description { get; set; }
 	public bool? IsDeleted { get; set; }
 
-    public ICollection<Post> Posts { get; set; } = new HashSet<Post>();
+	public ICollection<Post> Posts { get; set; } = new HashSet<Post>();
 }

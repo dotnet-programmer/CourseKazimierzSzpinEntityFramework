@@ -11,6 +11,5 @@ public class User
 	public ContactInfo ContactInfo { get; set; }
 
 	public ICollection<Post> Posts { get; set; } = new HashSet<Post>();
-	
 	public ICollection<Post> PostsApproved { get; set; } = new HashSet<Post>();
 }

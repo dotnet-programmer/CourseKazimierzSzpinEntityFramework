@@ -11,5 +11,5 @@ public class Customer
 
 	public Address Address { get; set; }
 
-    public ICollection<Invoice> Invoices { get; set; } = new HashSet<Invoice>();
+	public ICollection<Invoice> Invoices { get; set; } = new HashSet<Invoice>();
 }

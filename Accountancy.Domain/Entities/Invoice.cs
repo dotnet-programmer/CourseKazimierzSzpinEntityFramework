@@ -16,5 +16,5 @@ public class Invoice
 	public int CustomerId { get; set; }
 	public Customer Customer { get; set; }
 
-    public ICollection<InvoicePosition> InvoicePositions { get; set; } = new HashSet<InvoicePosition>();
+	public ICollection<InvoicePosition> InvoicePositions { get; set; } = new HashSet<InvoicePosition>();
 }
