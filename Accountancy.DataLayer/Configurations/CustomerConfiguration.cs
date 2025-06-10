@@ -35,5 +35,9 @@ internal class CustomerConfiguration : IEntityTypeConfiguration<Customer>
 			.HasOne(x => x.Address)
 			.WithOne(x => x.Customer)
 			.HasForeignKey<Address>(x => x.CustomerId);
+
+		builder
+			.Property(x => x.IsDeleted)
+			.HasDefaultValue(false);
 	}
 }

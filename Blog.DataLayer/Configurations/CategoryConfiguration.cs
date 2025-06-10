@@ -29,7 +29,7 @@ internal class CategoryConfiguration : IEntityTypeConfiguration<Category>
 		builder
 			.Property(x => x.Description)
 			.HasMaxLength(200);
-		// token współbieżności	
+		// token współbieżności
 		//.IsConcurrencyToken();
 
 		builder

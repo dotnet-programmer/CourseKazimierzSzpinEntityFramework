@@ -142,7 +142,7 @@
 
 // lista bazowa - books
 // dołączenie kolekcji - Join
-//	1) wskazanie dołączanej kolekcji 
+//	1) wskazanie dołączanej kolekcji
 //	2) wskazanie klucza obcego w kolekcji bazowej (od której się startuje)
 //	3) wskazanie klucza głównego kolekcji dołączanej
 //	4) projekcja wyników
@@ -646,11 +646,13 @@ using (AppDbContext context = new())
 using (AppDbContext context = new())
 {
 	using var transaction = await context.Database.BeginTransactionAsync();
-	context.Categories.Add(category);
-	context.Categories.Remove(new Category { Id = 5 });
-	context.Categories.Remove(new Category { Id = 999 });
-	await context.SaveChangesAsync();
-	await transaction.CommitAsync();
+	{
+		context.Categories.Add(category);
+		context.Categories.Remove(new Category { Id = 5 });
+		context.Categories.Remove(new Category { Id = 999 });
+		await context.SaveChangesAsync();
+		await transaction.CommitAsync();
+	}
 }
 
 // konflikty współbieżności
@@ -695,7 +697,6 @@ using (var context1 = new AppDbContext())
 		}
 		catch (Exception)
 		{
-
 			throw;
 		}
 	}
@@ -706,11 +707,12 @@ using (var context1 = new AppDbContext())
 // 2. Dodać w niej ręcznie sql tworzący widok
 // 3. Dodać nową klasę (encję) zawierającą pola z widoku
 // 4. Dodać w AppDbContext nowy DbSet
-// 5. Dodać plik konfiguracyjny z zapisem builder.HasNoKey().ToView("UserFullInfoView"); 
+// 5. Dodać plik konfiguracyjny z zapisem builder.HasNoKey().ToView("UserFullInfoView");
 //    HasNoKey oznacza żeby nie tworzyć nowej tabeli w bazie danych
 // 6. update-database
 using (AppDbContext context = new())
 {
+	// Aby wywołać widok w kontekście, wystarczy wywołać nazwę tego widoku:
 	var users = await context.UserFullInfo.ToListAsync();
 	foreach (var item in users)
 	{
@@ -725,14 +727,8 @@ using (AppDbContext context = new())
 // 3. b) Jeżeli procedura zwraca wartość odpowiadającą jednej z klas, to nie trzeba tworzyc nowej
 // 3. c) Jeżeli procedura zwraca wartość której nie ma w klasach encji, to trzeba dodać nową
 //    Dodać w AppDbContext nowy DbSet
-//    Dodać plik konfiguracyjny z zapisem builder.HasNoKey(); 
+//    Dodać plik konfiguracyjny z zapisem builder.HasNoKey();
 // 4. update-database
-
-// Aby wywołać widok w kontekście, wystarczy wywołać nazwę tego widoku:
-using (AppDbContext context = new())
-{
-	var users = await context.UserFullInfo.ToListAsync();
-}
 
 // Aby wywołać procedurę zwracającą wartość trzeba użyć FromSqlInterpolated przekazując nazwę procedury i ew. parametr wywołania:
 using (AppDbContext context = new())

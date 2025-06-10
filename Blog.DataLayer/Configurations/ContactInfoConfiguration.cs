@@ -6,7 +6,8 @@ namespace Blog.DataLayer.Configurations;
 
 internal class ContactInfoConfiguration : IEntityTypeConfiguration<ContactInfo>
 {
-	public void Configure(EntityTypeBuilder<ContactInfo> builder) => builder
+	public void Configure(EntityTypeBuilder<ContactInfo> builder)
+		=> builder
 			.Property(x => x.Email)
 			.IsRequired()
 			.HasMaxLength(50);

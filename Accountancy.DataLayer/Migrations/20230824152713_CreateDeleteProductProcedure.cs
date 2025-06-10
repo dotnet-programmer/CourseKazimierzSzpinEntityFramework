@@ -8,13 +8,16 @@ namespace Accountancy.DataLayer.Migrations;
 public partial class CreateDeleteProductProcedure : Migration
 {
 	/// <inheritdoc />
-	protected override void Up(MigrationBuilder migrationBuilder) => migrationBuilder.Sql(@"
-				CREATE OR ALTER PROCEDURE dbo.DeleteProduct @id int
-				AS
-				DELETE FROM Products
-				WHERE ProductId=@id
-				");
+	protected override void Up(MigrationBuilder migrationBuilder)
+		=> migrationBuilder.Sql(@"
+			CREATE OR ALTER PROCEDURE dbo.DeleteProduct
+			@id int
+			AS
+			DELETE FROM Products
+			WHERE ProductId=@id
+		");
 
 	/// <inheritdoc />
-	protected override void Down(MigrationBuilder migrationBuilder) => migrationBuilder.Sql(@"DROP PROCEDURE dbo.DeleteProduct");
+	protected override void Down(MigrationBuilder migrationBuilder)
+		=> migrationBuilder.Sql(@"DROP PROCEDURE dbo.DeleteProduct");
 }

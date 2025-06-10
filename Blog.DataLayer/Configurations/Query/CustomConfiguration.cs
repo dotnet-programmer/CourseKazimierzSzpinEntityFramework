@@ -6,7 +6,8 @@ namespace Blog.DataLayer.Configurations.Query;
 
 internal class CustomConfiguration : IEntityTypeConfiguration<Custom>
 {
-	public void Configure(EntityTypeBuilder<Custom> builder) => builder
+	public void Configure(EntityTypeBuilder<Custom> builder)
+		=> builder
 			.HasNoKey()
 			.ToView("Custom");
 }

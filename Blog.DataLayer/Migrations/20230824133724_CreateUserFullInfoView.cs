@@ -11,15 +11,16 @@ public partial class CreateUserFullInfoView : Migration
 	protected override void Up(MigrationBuilder migrationBuilder)
 	{
 		var userFullInfoView = @"
-				CREATE OR ALTER VIEW [dbo].[UserFullInfoView]
-				AS
-				SELECT u.Id, u.Login, ci.Email
-				FROM dbo.Users AS u
-				LEFT JOIN dbo.ContactInfo AS ci ON ci.UserId=u.Id";
+			CREATE OR ALTER VIEW [dbo].[UserFullInfoView]
+			AS
+			SELECT u.Id, u.Login, ci.Email
+			FROM dbo.Users AS u
+			LEFT JOIN dbo.ContactInfo AS ci ON ci.UserId=u.Id";
 
 		migrationBuilder.Sql(userFullInfoView);
 	}
 
 	/// <inheritdoc />
-	protected override void Down(MigrationBuilder migrationBuilder) => migrationBuilder.Sql(@"DROP VIEW dbo.UserFullInfoView");
+	protected override void Down(MigrationBuilder migrationBuilder)
+		=> migrationBuilder.Sql(@"DROP VIEW dbo.UserFullInfoView");
 }
