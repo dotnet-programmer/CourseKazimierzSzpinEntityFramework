@@ -1,10 +1,8 @@
 ﻿using Shop.Application.Common.Interfaces;
-using System;
 
-namespace Shop.Infrastructure.Services
+namespace Shop.Infrastructure.Services;
+
+public class DateTimeService : IDateTimeService
 {
-    public class DateTimeService : IDateTime
-    {
-        public DateTime Now => DateTime.Now;
-    }
+	public DateTime Now => DateTime.Now;
 }

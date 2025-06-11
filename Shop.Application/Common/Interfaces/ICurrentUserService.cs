@@ -1,7 +1,6 @@
-﻿namespace Shop.Application.Common.Interfaces
+﻿namespace Shop.Application.Common.Interfaces;
+
+public interface ICurrentUserService
 {
-    public interface ICurrentUserService
-    {
-        string UserId { get; }
-    }
+	string UserId { get; }
 }
