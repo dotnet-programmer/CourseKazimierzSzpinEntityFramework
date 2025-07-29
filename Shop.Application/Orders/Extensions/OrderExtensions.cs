@@ -16,12 +16,7 @@ public static class OrderExtensions
 		: throw new ArgumentNullException(nameof(order));
 
 	public static IEnumerable<OrderDto> ToDtos(this IEnumerable<Order> orders)
-	{
-		if (orders == null || !orders.Any())
-		{
-			return Enumerable.Empty<OrderDto>();
-		}
-
-		return orders.Select(order => order.ToDto());
-	}
+		=> orders == null || !orders.Any()
+			? Enumerable.Empty<OrderDto>()
+			: orders.Select(order => order.ToDto());
 }

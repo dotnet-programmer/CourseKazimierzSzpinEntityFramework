@@ -6,6 +6,6 @@ namespace Shop.Domain.Entities;
 public class Order : AuditableBaseEntity
 {
 	public int Id { get; set; }
-	public string Title { get; set; }
+	public string Title { get; set; } = default!;
 	public MethodPayment MethodPayment { get; set; }
 }

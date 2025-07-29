@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Accountancy.DataLayer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230822160854_InitMigration")]
-    partial class InitMigration
+    [Migration("20250729142753_Init-migration")]
+    partial class Initmigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.10")
+                .HasAnnotation("ProductVersion", "9.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -35,29 +35,31 @@ namespace Accountancy.DataLayer.Migrations
 
                     b.Property<string>("City")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
                     b.Property<string>("PostalCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<string>("State")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Street")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
 
                     b.HasKey("AddressId");
 
                     b.HasIndex("CustomerId")
                         .IsUnique();
 
-                    b.ToTable("Addresses");
+                    b.ToTable("Addresses", (string)null);
 
                     b.HasData(
                         new
@@ -79,13 +81,35 @@ namespace Accountancy.DataLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AttributeId"));
 
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("AttributeId");
 
-                    b.ToTable("Attributes");
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Attributes", (string)null);
+                });
+
+            modelBuilder.Entity("Accountancy.Domain.Entities.AttributeProduct", b =>
+                {
+                    b.Property<int>("AttributeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("AttributeId", "ProductId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("AttributeProduct", (string)null);
                 });
 
             modelBuilder.Entity("Accountancy.Domain.Entities.Customer", b =>
@@ -97,27 +121,32 @@ namespace Accountancy.DataLayer.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CustomerId"));
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
 
                     b.Property<string>("Nip")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(13)
+                        .HasColumnType("nvarchar(13)");
 
                     b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(25)
+                        .HasColumnType("nvarchar(25)");
 
                     b.HasKey("CustomerId");
 
-                    b.ToTable("Customers");
+                    b.HasIndex("Nip")
+                        .IsUnique();
+
+                    b.ToTable("Customers", (string)null);
 
                     b.HasData(
                         new
@@ -167,7 +196,10 @@ namespace Accountancy.DataLayer.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Invoices");
+                    b.HasIndex("Year", "Month", "Number")
+                        .IsUnique();
+
+                    b.ToTable("Invoices", (string)null);
                 });
 
             modelBuilder.Entity("Accountancy.Domain.Entities.InvoicePosition", b =>
@@ -193,7 +225,7 @@ namespace Accountancy.DataLayer.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("InvoicePositions");
+                    b.ToTable("InvoicePositions", (string)null);
                 });
 
             modelBuilder.Entity("Accountancy.Domain.Entities.Product", b =>
@@ -206,29 +238,46 @@ namespace Accountancy.DataLayer.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("ProductId");
 
-                    b.ToTable("Products");
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Products", (string)null);
                 });
 
-            modelBuilder.Entity("AttributeProduct", b =>
+            modelBuilder.Entity("Accountancy.Domain.Entities.Views.CustomerAddressView", b =>
                 {
-                    b.Property<int>("AttributesAttributeId")
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ProductsProductId")
-                        .HasColumnType("int");
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("AttributesAttributeId", "ProductsProductId");
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
-                    b.HasIndex("ProductsProductId");
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("AttributeProduct");
+                    b.Property<string>("Nip")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable((string)null);
+
+                    b.ToView("CustomerAddressView", (string)null);
                 });
 
             modelBuilder.Entity("Accountancy.Domain.Entities.Address", b =>
@@ -242,12 +291,31 @@ namespace Accountancy.DataLayer.Migrations
                     b.Navigation("Customer");
                 });
 
+            modelBuilder.Entity("Accountancy.Domain.Entities.AttributeProduct", b =>
+                {
+                    b.HasOne("Accountancy.Domain.Entities.Attribute", "Attribute")
+                        .WithMany()
+                        .HasForeignKey("AttributeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Accountancy.Domain.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Attribute");
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("Accountancy.Domain.Entities.Invoice", b =>
                 {
                     b.HasOne("Accountancy.Domain.Entities.Customer", "Customer")
                         .WithMany("Invoices")
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Customer");
@@ -258,13 +326,13 @@ namespace Accountancy.DataLayer.Migrations
                     b.HasOne("Accountancy.Domain.Entities.Invoice", "Invoice")
                         .WithMany("InvoicePositions")
                         .HasForeignKey("InvoiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Accountancy.Domain.Entities.Product", "Product")
                         .WithMany("InvoicePositions")
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Invoice");
@@ -272,25 +340,9 @@ namespace Accountancy.DataLayer.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("AttributeProduct", b =>
-                {
-                    b.HasOne("Accountancy.Domain.Entities.Attribute", null)
-                        .WithMany()
-                        .HasForeignKey("AttributesAttributeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Accountancy.Domain.Entities.Product", null)
-                        .WithMany()
-                        .HasForeignKey("ProductsProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Accountancy.Domain.Entities.Customer", b =>
                 {
-                    b.Navigation("Address")
-                        .IsRequired();
+                    b.Navigation("Address");
 
                     b.Navigation("Invoices");
                 });

@@ -2,5 +2,5 @@
 
 public class Custom
 {
-	public string FullDescription { get; set; }
+	public string? FullDescription { get; set; }
 }

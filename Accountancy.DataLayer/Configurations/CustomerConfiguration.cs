@@ -19,13 +19,13 @@ internal class CustomerConfiguration : IEntityTypeConfiguration<Customer>
 			.IsUnique();
 
 		builder
-			.Property(x => x.Name)
-			.HasMaxLength(250);
-
-		builder
 			.Property(x => x.Nip)
 			.HasMaxLength(13)
 			.IsRequired();
+
+		builder
+			.Property(x => x.Name)
+			.HasMaxLength(250);
 
 		builder
 			.Property(x => x.PhoneNumber)

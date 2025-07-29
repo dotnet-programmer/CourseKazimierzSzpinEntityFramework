@@ -12,9 +12,8 @@ public class Invoice
 	public DateTime CreatedDate { get; set; }
 	public decimal TotalPrice { get; set; }
 	public bool IsPaid { get; set; }
-
 	public int CustomerId { get; set; }
-	public Customer Customer { get; set; }
 
+	public Customer? Customer { get; set; }
 	public ICollection<InvoicePosition> InvoicePositions { get; set; } = new HashSet<InvoicePosition>();
 }

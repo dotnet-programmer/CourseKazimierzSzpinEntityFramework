@@ -26,7 +26,7 @@ public class AppDbContext : DbContext
 
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 	{
-		var builder = new ConfigurationBuilder().AddJsonFile("AppSettings.json", true, true);
+		var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json", true, true);
 		var config = builder.Build();
 
 		optionsBuilder
@@ -49,6 +49,11 @@ public class AppDbContext : DbContext
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
+		// konfiguracja bezpośrednio w AppDbContext
+		//modelBuilder.Entity<Post>()
+		//	.Property(x => x.Title)
+		//	.IsRequired();
+
 		// dodanie pojedynczej konfiguracji
 		//modelBuilder.ApplyConfiguration(new PostConfiguration());
 

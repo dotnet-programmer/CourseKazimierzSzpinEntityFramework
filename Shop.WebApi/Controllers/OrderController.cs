@@ -11,34 +11,26 @@ namespace Shop.WebApi.Controllers;
 [Route("[controller]")]
 public class OrderController : ControllerBase
 {
-	private ISender _mediator;
+	private ISender? _mediator;
 
 	public ISender Mediator
-	=> _mediator ??= HttpContext.RequestServices.GetService<ISender>();
+		=> _mediator ??= HttpContext.RequestServices.GetService<ISender>()!;
 
 	[HttpGet("GetOrderById")]
-	public async Task<ActionResult<OrderDto>> GetOrderById([FromQuery]GetOrderByIdQuery query)
-	{
-		return await Mediator.Send(query);
-	}
+	public async Task<ActionResult<OrderDto>> GetOrderById([FromQuery] GetOrderByIdQuery query)
+		=> await Mediator.Send(query);
 
 	[HttpGet("GetOrders")]
 	public async Task<IEnumerable<OrderDto>> GetOrders([FromQuery] GetOrdersQuery query)
-	{
-		return await Mediator.Send(query);
-	}
+		=> await Mediator.Send(query);
 
 	[HttpGet("GetOrdersWithPagination")]
 	public async Task<ActionResult<PaginatedList<OrderDto>>> GetOrdersWithPagination([FromQuery] GetOrdersWithPaginationQuery query)
-	{
-		return await Mediator.Send(query);
-	}
+		=> await Mediator.Send(query);
 
 	[HttpPost]
 	public async Task<ActionResult<int>> CreateOrder([FromQuery] CreateOrderCommand command)
-	{
-		return await Mediator.Send(command);
-	}
+		=> await Mediator.Send(command);
 
 	[HttpDelete]
 	public async Task<ActionResult> Delete(int id)

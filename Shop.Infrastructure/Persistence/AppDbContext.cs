@@ -6,18 +6,9 @@ using Shop.Domain.Entities;
 
 namespace Shop.Infrastructure.Persistence;
 
-public class AppDbContext : DbContext, IAppDbContext
+// jako parametr przyjmuje konfigurację, która jest przekazywana przez Dependency Injection
+public class AppDbContext(DbContextOptions<AppDbContext> options, ICurrentUserService currentUserService, IDateTimeService dateTimeService) : DbContext(options), IAppDbContext
 {
-	private readonly IDateTimeService _dateTimeService;
-	private readonly ICurrentUserService _currentUserService;
-
-	// jako parametr przyjmuje konfigurację, która jest przekazywana przez Dependency Injection
-	public AppDbContext(DbContextOptions<AppDbContext> options, ICurrentUserService currentUserService, IDateTimeService dateTimeService) : base(options)
-	{
-		_currentUserService = currentUserService;
-		_dateTimeService = dateTimeService;
-	}
-
 	public DbSet<Order> Orders { get; set; }
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -40,12 +31,12 @@ public class AppDbContext : DbContext, IAppDbContext
 				case EntityState.Deleted:
 					break;
 				case EntityState.Modified:
-					item.Entity.LastModified = _dateTimeService.Now;
-					item.Entity.LastModifiedBy = _currentUserService.UserId;
+					item.Entity.LastModified = dateTimeService.Now;
+					item.Entity.LastModifiedBy = currentUserService.UserId;
 					break;
 				case EntityState.Added:
-					item.Entity.Created = _dateTimeService.Now;
-					item.Entity.CreatedBy = _currentUserService.UserId;
+					item.Entity.Created = dateTimeService.Now;
+					item.Entity.CreatedBy = currentUserService.UserId;
 					break;
 				default:
 					break;
