@@ -14,6 +14,7 @@ internal class Homework2
 	{
 		Console.ReadKey(true);
 		Console.WriteLine("\n1) Dodaj do każdej tabeli przynajmniej 1 rekord za pomocą Entity Framework Core.\n");
+
 		Address address = new()
 		{
 			State = "NewState1",
@@ -75,6 +76,7 @@ internal class Homework2
 
 		Console.ReadKey(true);
 		Console.WriteLine("\n2) Zmień i zaktualizuj wartość pola IsPaid w tabeli Invoices dla dowolnej faktury.\n");
+
 		using (AppDbContext context = new())
 		{
 			var invoiceToUpdate = await context.Invoices.FindAsync(3);
@@ -87,23 +89,20 @@ internal class Homework2
 
 		Console.ReadKey(true);
 		Console.WriteLine("\n3) Zaktualizuj atrybuty do wybranego produktu. Tak żeby przynajmniej 1 był nowy i przynajmniej 1 został usunięty.\n");
+
 		using (AppDbContext context = new())
 		{
-			var productsTmp = await context.Products.ToListAsync();
-			var product = productsTmp.First();
-			int productId = product.ProductId;
-
 			var productAttributesFromDB = await context.AttributeProducts
-				.Where(x => x.ProductId == productId)
+				.Where(x => x.ProductId == 1)
 				.AsNoTracking()
 				.ToListAsync();
 
 			context.TryUpdateManyToMany(
 				productAttributesFromDB,
 				[
-					new() { ProductId = productId, AttributeId = productAttributesFromDB[2].AttributeId },
-					new() { ProductId = productId, AttributeId = productAttributesFromDB[1].AttributeId },
-					new() { ProductId = productId, AttributeId = productAttributesFromDB[0].AttributeId },
+					new() { ProductId = 1, AttributeId = 1 },
+					new() { ProductId = 1, AttributeId = 2 },
+					new() { ProductId = 1, AttributeId = 3 },
 				],
 				x => x.AttributeId
 			);
@@ -112,6 +111,7 @@ internal class Homework2
 
 		Console.ReadKey(true);
 		Console.WriteLine("\n4) Usuń dowolnego klienta z bazy danych za pomocą Entity Framework Core.\n");
+
 		using (AppDbContext context = new())
 		{
 			context.Customers.Remove(new Customer { CustomerId = 3 });
@@ -120,29 +120,32 @@ internal class Homework2
 
 		Console.ReadKey(true);
 		Console.WriteLine("\n5) Dodaj 3000 nowych produktów do bazy danych.\n");
-		List<Product> products = [];
+
+		List<Product> productsToAdd = [];
 		for (int i = 0; i < 3000; i++)
 		{
-			products.Add(new Product { Name = $"ProductName{i}", Price = i + 10 });
+			productsToAdd.Add(new() { Name = $"ProductName{i}", Price = i + 10 });
 		}
 
 		using (AppDbContext context = new())
 		{
 			//context.AddRange(products);
-			await context.BulkInsertAsync(products);
+			await context.BulkInsertAsync(productsToAdd);
 		}
 
 		Console.ReadKey(true);
 		Console.WriteLine("\n6) Wszystkim produktom w bazie danych zwiększ cenę o 10.\n");
+
 		using (AppDbContext context = new())
 		{
-			var products2 = await context.Products.ToListAsync();
-			products2.ForEach(x => x.Price += 10);
-			await context.BulkUpdateAsync(products2);
+			var products = await context.Products.ToListAsync();
+			products.ForEach(x => x.Price += 10);
+			await context.BulkUpdateAsync(products);
 		}
 
 		Console.ReadKey(true);
 		Console.WriteLine("\n7) Usuń wszystkie produkty z bazy danych, które wcześniej dodałeś.\n");
+
 		using (AppDbContext context = new())
 		{
 			var productsToDelete = await context.Products.Where(x => x.ProductId > 6).ToListAsync();
@@ -153,6 +156,7 @@ internal class Homework2
 
 		Console.ReadKey(true);
 		Console.WriteLine("\n8) Obsłuż miękkie usuwanie klientów i usuń w ten sposób dowolnego klienta.\n");
+
 		using (AppDbContext context = new())
 		{
 			var customerToDelete = await context.Customers.FindAsync(5);
@@ -165,6 +169,7 @@ internal class Homework2
 
 		Console.ReadKey(true);
 		Console.WriteLine("\n9) Stwórz i wywołaj nowy widok, który na podstawie przekazanego id będzie zwracał wszystkie informacje o kliencie i jego adresie.\n");
+
 		using (AppDbContext context = new())
 		{
 			var customersWithAddress = await context.CustomerAddressView.ToListAsync();
@@ -176,10 +181,10 @@ internal class Homework2
 
 		Console.ReadKey(true);
 		Console.WriteLine("\n10) Stwórz i wywołaj procedurę, która będzie usuwała produkt na podstawie przekazanego id.\n");
+
 		using (AppDbContext context = new())
 		{
-			int value1 = 666;
-			await context.Database.ExecuteSqlInterpolatedAsync($"DeleteProduct {value1}");
+			await context.Database.ExecuteSqlInterpolatedAsync($"DeleteProduct {5}");
 		}
-	}
+	} 
 }

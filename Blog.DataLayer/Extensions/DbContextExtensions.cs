@@ -16,10 +16,7 @@ public static class DbContextExtensions
 		dbContext.Set<T>().AddRange(newItems.Except(oldItems, getKey));
 	}
 
-	private static IEnumerable<T> Except<T, TKey>
-		(this IEnumerable<T> items,
-		IEnumerable<T> other,
-		Func<T, TKey> getKeyFunc)
+	private static IEnumerable<T> Except<T, TKey>(this IEnumerable<T> items, IEnumerable<T> other, Func<T, TKey> getKeyFunc)
 		=> items
 			.GroupJoin(other, getKeyFunc, getKeyFunc, (item, tempItems) => new { item, tempItems })
 			.SelectMany(t => t.tempItems.DefaultIfEmpty(), (t, temp) => new { t, temp })

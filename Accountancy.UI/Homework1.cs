@@ -9,7 +9,11 @@ internal class Homework1
 	{
 		using (AppDbContext context = new())
 		{
-			Console.WriteLine("3) Napisz pierwszą kwerendę, która pobierze wszystkie faktury, dołączając właściwości nawigacyjne, czyli wszystkie informacje o kliencie wraz z adresem oraz o pozycjach dla każdej faktury bez śledzenie danych.\n");
+			Console.WriteLine("1) Na początek skonfiguruj odpowiednio naszą aplikację, tak aby wszystkie zapytania na bazie danych były wyświetlane w konsoli oraz zapisywane do pliku. Odblokuj również szczegółowe dane o zapytaniach.");
+			
+			Console.WriteLine("\n2) Spróbuj dodać póki co jeszcze bezpośrednio w SQL Management Server kilka rekordów do bazy danych.\n");
+			
+			Console.WriteLine("\n3) Napisz pierwszą kwerendę, która pobierze wszystkie faktury, dołączając właściwości nawigacyjne, czyli wszystkie informacje o kliencie wraz z adresem oraz o pozycjach dla każdej faktury bez śledzenie danych.\n");
 			var invoices = await context.Invoices
 				.Include(x => x.Customer)
 				.ThenInclude(x => x.Address)
