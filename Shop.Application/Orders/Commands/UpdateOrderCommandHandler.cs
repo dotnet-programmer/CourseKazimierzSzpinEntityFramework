@@ -12,7 +12,6 @@ public class UpdateOrderCommandHandler(IAppDbContext appDbContext) : IRequestHan
 		var order = await appDbContext.Orders.FindAsync(request.Id) ?? throw new NotFoundException(nameof(Order), request.Id);
 		order.Title = request.Title;
 		order.MethodPayment = request.MethodPayment;
-
 		await appDbContext.SaveChangesAsync(cancellationToken);
 		return Unit.Value;
 	}
