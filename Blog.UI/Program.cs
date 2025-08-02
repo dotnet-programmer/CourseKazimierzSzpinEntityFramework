@@ -1,5 +1,5 @@
-﻿using Blog.UI.Linq;
-using Blog.UI.EntityFrameworkCore;
+﻿using Blog.UI.EntityFrameworkCore;
+using Blog.UI.Linq;
 
 Linq linq = new();
 linq.Basics();

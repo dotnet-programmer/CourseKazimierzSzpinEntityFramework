@@ -1,6 +1,6 @@
 ﻿namespace Blog.UI.Linq;
 
-class MyBook
+internal class MyBook
 {
 	public string Info { get; set; } = default!;
 }

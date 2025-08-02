@@ -13,8 +13,8 @@ public class GetOrderByIdQueryHandler(IAppDbContext appDbContext) : IRequestHand
 	{
 		var order = await appDbContext.Orders.FindAsync(request.Id);
 
-		return order == null 
-			? throw new NotFoundException(nameof(Order), request.Id) 
+		return order == null
+			? throw new NotFoundException(nameof(Order), request.Id)
 			: order.ToDto();
 	}
 }

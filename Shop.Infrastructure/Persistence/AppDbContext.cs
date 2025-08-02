@@ -12,9 +12,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, ICurrentUserSe
 	public DbSet<Order> Orders { get; set; }
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
-	{
-		modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-	}
+		=> modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
 	public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
 	{

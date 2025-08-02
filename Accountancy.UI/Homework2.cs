@@ -186,5 +186,5 @@ internal class Homework2
 		{
 			await context.Database.ExecuteSqlInterpolatedAsync($"DeleteProduct {5}");
 		}
-	} 
+	}
 }
