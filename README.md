@@ -1,4 +1,4 @@
-### Video course by Kazimierz Szpin
+## Video course by Kazimierz Szpin
 
 - Entity Framework Core
 - Migrations
